@@ -10,9 +10,10 @@ class App extends React.Component {
       // currWord is the current secret word for this round. Update this with this.setState after each round.
       currWord: getRandomWord(),
       // guessedLetters stores all letters a user has guessed so far
-      guessesLeft: 10,
       guessedLetters: [],
+      guessesLeft: 10,
       letter: "",
+      gamePhase: "PLAYING",
     };
   }
 
@@ -28,7 +29,14 @@ class App extends React.Component {
 
     this.setState({
       letter: "",
-      guessedLetters: this.state.letter,
+      guessedLetters: this.state.guessedLetters.includes(this.state.letter)
+        ? [...this.state.guessedLetters]
+        : [...this.state.guessedLetters, this.state.letter],
+      guessesLeft:
+        this.state.currWord.includes(this.state.letter) ||
+        this.state.guessedLetters.includes(this.state.letter)
+          ? this.state.guessesLeft
+          : this.state.guessesLeft - 1,
     });
   }
 
@@ -36,14 +44,14 @@ class App extends React.Component {
   generateWordDisplay = () => {
     const wordDisplay = [];
     // for...of is a string and array iterator that does not use index
-    for (let letter of this.state.currWord) {
-      if (this.state.guessedLetters.includes(letter)) {
-        wordDisplay.push(letter);
+    for (let guess of this.state.currWord) {
+      if (this.state.guessedLetters.includes(guess)) {
+        wordDisplay.push(guess);
       } else {
         wordDisplay.push("_");
       }
     }
-    return wordDisplay.toString();
+    return <h3>{wordDisplay.toString()}</h3>;
   };
 
   // Insert form callback functions handleChange and handleSubmit here
@@ -51,15 +59,22 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
+        <header>
+          <h1>☠️HANG-MAN☠️</h1>
+        </header>
         <div className="hang-man"></div>
         <div className="App-div">
-          <h1>Guess The Word 🚀</h1>
           <h3>Word Display</h3>
           {this.generateWordDisplay()}
-          <h3>Guessed Letters</h3>
-          {this.state.guessedLetters.length > 0
-            ? this.state.guessedLetters.toString()
-            : "-"}
+          <h4>
+            Guessed Letters
+            <br />
+            {this.state.guessedLetters.length > 0
+              ? this.state.guessedLetters.toString()
+              : "-"}
+            <br />
+            You have {this.state.guessesLeft} Lives left...
+          </h4>
           <form onSubmit={(e) => this.onSubmit(e)}>
             <label>Type your letter here</label>
             <br />
@@ -67,7 +82,7 @@ class App extends React.Component {
               type="text"
               name="letter"
               value={this.state.letter}
-              maxlength="1"
+              maxLength="1"
               onChange={(e) => this.handleChange(e)}
             />
             <br />
