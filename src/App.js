@@ -10,12 +10,29 @@ class App extends React.Component {
       // currWord is the current secret word for this round. Update this with this.setState after each round.
       currWord: getRandomWord(),
       // guessedLetters stores all letters a user has guessed so far
+      guessesLeft: 10,
       guessedLetters: [],
-      // Insert num guesses left state here
-      // Insert form input state here
+      letter: "",
     };
   }
 
+  //event items
+  handleChange = (e) => {
+    this.setState({
+      letter: e.target.value,
+    });
+  };
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    this.setState({
+      letter: "",
+      guessedLetters: this.state.letter,
+    });
+  }
+
+  //word generate
   generateWordDisplay = () => {
     const wordDisplay = [];
     // for...of is a string and array iterator that does not use index
@@ -34,7 +51,8 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
+        <div className="hang-man"></div>
+        <div className="App-div">
           <h1>Guess The Word 🚀</h1>
           <h3>Word Display</h3>
           {this.generateWordDisplay()}
@@ -42,10 +60,20 @@ class App extends React.Component {
           {this.state.guessedLetters.length > 0
             ? this.state.guessedLetters.toString()
             : "-"}
-          <h3>Input</h3>
-          {/* Insert form element here */}
-          Todo: Insert form element here
-        </header>
+          <form onSubmit={(e) => this.onSubmit(e)}>
+            <label>Type your letter here</label>
+            <br />
+            <input
+              type="text"
+              name="letter"
+              value={this.state.letter}
+              maxlength="1"
+              onChange={(e) => this.handleChange(e)}
+            />
+            <br />
+            <input id="submit-button" type="submit" />
+          </form>
+        </div>
       </div>
     );
   }
